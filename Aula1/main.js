@@ -1,16 +1,16 @@
 class Calculadora 
 {
-    #operators = [];
+    operators = [];
     operator = ""; 
     opA = "";
     opB = "";
     opN = false;
 
     constructor(){
-        this.#operators["+"] =  (a, b) => a+b;
-        this.#operators["-"] =  (a, b) => a-b;
-        this.#operators["*"] =  (a, b) => a*b;
-        this.#operators["/"] =  (a, b) => a/b;
+        this.operators["+"] =  (a, b) => a+b;
+        this.operators["-"] =  (a, b) => a-b;
+        this.operators["*"] =  (a, b) => a*b;
+        this.operators["/"] =  (a, b) => a/b;
     }
     
     clear()
@@ -24,7 +24,7 @@ class Calculadora
     get result ()
     {
         if(this.operator == "") return 0;
-        const r = this.#operators[this.operator](parseFloat(this.opA), parseFloat(this.opB));
+        const r = this.operators[this.operator](parseFloat(this.opA), parseFloat(this.opB));
         this.clear();
         this.opA = `${r}`;
         return this.opA;
@@ -82,13 +82,27 @@ $("#clear").on("click", (e) =>
     $("#visor").html(calc.show);
 });
 
-$("#operators").children().on("click", (e) => 
+/* $("#operators").children().on("click", (e) => 
 {
     console.log(e.target.innerText);
     calc.operator = e.target.innerText;
     calc.opN = !calc.opN;
     $("#visor").html(calc.show);
 });
+ */
+for(key in calc.operators)
+{
+    const li = document.createElement("li");
+    li.onclick = () => {
+        console.log(e.target.innerText);
+        calc.operator = e.target.innerText;
+        calc.opN = !calc.opN;
+        $("#visor").html(calc.show);
+    };
+    li.innerText = key;
+    $("#operators").append(li);
+    console.log(key);
+}
 
 $("#numbers").children().on("click", (e) => 
 {
