@@ -4,7 +4,8 @@ body {
 }
 
 #lista {
-    height: 300px;
+    max-height: 300px;
+    min-height: fit-content;
     overflow-y: scroll;
 }
 
