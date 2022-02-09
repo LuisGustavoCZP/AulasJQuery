@@ -4,13 +4,37 @@ function Moedas (callback)
     .done(callback);
 }
 
+function ChangeMoeda (currency){
+    console.log(currency);
+    $.ajax({url:"https://economia.awesomeapi.com.br/last/"+currency})
+    .done(data => 
+    { 
+        const c = data[currency.replaceAll("-", "")];
+        console.log(data); 
+        $("#diario").html("");
+        $("#diario").append(`<span><h4>Compra</h4><h5>${c["bid"]}</h5></span>`);
+        $("#diario").append(`<span><h4>Venda</h4><h5>${c["ask"]}</h5></span>`);
+        $("#diario").append(`<span><h4>Data</h4><h5>${c["create_date"]}</h5></span>`);
+        $("#diario").append(`<span><h4>Min</h4><h5>${c["high"]}</h5></span>`);
+        $("#diario").append(`<span><h4>Max</h4><h5>${c["low"]}</h5></span>`);
+        
+        /* for(k in c)
+        {
+            $("#diario").append(`<span><h4>${k}</h4><h5>${c[k]}</h5></span>`);
+        } */
+    });
+    
+}
+
 Moedas(x => 
 {
     console.log(x);
     for(k in x)
     {
-        $("#moedas").append(`<option>${k}</option>`);
+        const m = x[k];
+        $("#moedas").append(`<option value="${m.code}-${m.codein}">${k}</option>`);
     }
+    ChangeMoeda($("#moedas").val());
 });
 
 function MoedaData ()
@@ -18,19 +42,25 @@ function MoedaData ()
     const currency = $("#moedas").val();
     const startDate = $("#start-data").val().replaceAll("-","");
     const endDate = $("#end-data").val().replaceAll("-","");
-    const t = `/${currency}-BRL/200?start_date=${startDate}&end_date=${endDate}`;
+    const t = `/${currency}/200?start_date=${startDate}&end_date=${endDate}`;
     console.log(t);
     $.ajax({url:`https://economia.awesomeapi.com.br/${t}`})
     .done(data => {
         console.log(data);
         const list = [];
-        data.forEach(currencyData =>{
-            const day = new Date(currencyData.timestamp*1000).getDate() + 1;
-            const month = new Date(currencyData.timestamp*1000).getMonth() +1;
-            const year = new Date(currencyData.timestamp*1000).getFullYear();               
-            list.push([`${day}/${month}/${year}`, parseFloat(currencyData.bid)]);
+        data.forEach(currencyData =>
+        {
+            const tstamp = new Date(currencyData.timestamp*1000);
+            const day = FormatZero(tstamp.getDate() + 1);
+            const month = FormatZero(tstamp.getMonth() +1);
+            const year = tstamp.getFullYear();
+            const hours = FormatZero(tstamp.getHours());
+            const minutes = FormatZero(tstamp.getMinutes());
+            const seconds = FormatZero(tstamp.getSeconds());
+
+            list.push([`${day}/${month}/${year} ${hours}:${minutes}:${seconds}`, parseFloat(currencyData.bid), parseFloat(currencyData.ask), parseFloat(currencyData.low), parseFloat(currencyData.high)]);
             
-            $("#lista").append(`<li><h3>${currency}</h3><h5>${day}/${month}/${year}</h5><h4>${currencyData.low}</h4><h4>${currencyData.high}</h4><h4>${currencyData.bid}</h4></li>`);
+            $("#lista").append(`<li><h3>${day}/${month}/${year}</h3><h4>Compra: ${currencyData.bid}</h4><h4>Venda: ${currencyData.ask}</h4><h4>Min: ${currencyData.low}</h4><h4>Max: ${currencyData.high}</h4></li>`);
         });
         list.reverse();
         console.log(list);
@@ -40,6 +70,10 @@ function MoedaData ()
 }
 
 $("#busca").on("click", MoedaData);
+
+function FormatZero (num) {
+    return `${num>9?num:"0"+num}`;
+}
 
 function DateString (date){
     const d = date.toISOString();
@@ -52,7 +86,10 @@ function DrawGraph(list)
 {
     var data = new google.visualization.DataTable();
     data.addColumn('string', 'Data');
-    data.addColumn('number', 'U$');
+    data.addColumn('number', 'Compra');
+    data.addColumn('number', 'Venda');
+    data.addColumn('number', 'Min');
+    data.addColumn('number', 'Max');
 
     data.addRows(list);
 
@@ -72,5 +109,6 @@ function DrawGraph(list)
 
 const today = DateString(new Date());
 
+$("#moedas").on("click", e => {ChangeMoeda(e.target.value);});
 $("#start-data").val(today);
 $("#end-data").val(today);

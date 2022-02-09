@@ -17,3 +17,9 @@ body {
 #lista > li > * {
     margin: 5px;
 }
+
+#diario {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+}
