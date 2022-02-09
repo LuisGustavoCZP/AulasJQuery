@@ -1,12 +1,14 @@
 body {
     display: flex;
     flex-direction: column;
+    background-color: lightgray;
 }
 
 #lista {
     max-height: 300px;
     min-height: fit-content;
     overflow-y: scroll;
+    background-color: white;
 }
 
 #lista > li {
@@ -21,6 +23,11 @@ body {
 
 #diario {
     display: flex;
-    justify-content: space-between;
-    width: 100%;
+    justify-content: space-evenly;
+    background-color: white;
+}
+
+#inputs {
+    display: flex;
+    justify-content: space-evenly;
 }
