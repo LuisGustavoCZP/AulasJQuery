@@ -23,6 +23,20 @@ main {
     flex-grow: 1;
 }
 
+#result {
+    display: flex;
+    width: 100%;
+    justify-content: center;
+    /* background-color: yellow; */
+    color: darkblue;
+    margin: 5px;
+    background-color: rgb(62, 156, 0);
+}
+
+#CEP.r, #result.r {
+    background-color: rgb(156, 31, 0);
+}
+
 section {
     display: flex;
     flex-direction: column;
@@ -44,4 +58,8 @@ iframe {
     display: flex;
     flex-grow: 1;
     height: 100%;
+}
+
+form {
+    margin: 5px;
 }
