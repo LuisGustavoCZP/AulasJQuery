@@ -32,6 +32,31 @@ function ClearFields (){
   map.attr('src', "");
 }
 
+function GetCEPData (data)
+{
+  console.log(data);
+  result.html("O CEP indicado foi encontrado");
+  result.removeClass("r");
+
+  $("#rua").html(`<span class="p">${data.address_type} </span> ${data.address_name}`);
+  $("#bairro").html(`<span class="p">Bairro</span> ${data.district}`);
+  $("#cidade").html(`<span class="p">Cidade</span> ${data.city}`);
+  $("#ddd").html(`<span class="p">DDD</span> ${data.ddd}`);
+  $("#ibge").html(`<span class="p">IBGE</span> ${data.city_ibge}`);
+  $("#lat").html(`<span class="p">LAT</span> ${data.lat}`);
+  $("#long").html(`<span class="p">LONG</span> ${data.lng}`);
+
+  const t0 = `${url}&q=${data.lat},${data.lng}+(CEP%20${data.cep})&output=embed`;
+  map.attr('src',t0); ///?api=1&zoom=${zoom}&maptype=${mtype}
+}
+
+function GetCEPError (jqXHR, textStatus)
+{
+  result.addClass("r");
+  result.html("O CEP indicado não foi encontrado!")
+  ClearFields ();
+}
+
 function CEPLocal ()
 {
   const result = $("#result");
@@ -43,27 +68,8 @@ function CEPLocal ()
   }
 
   $.ajax({url:`https://cep.awesomeapi.com.br/json/${cep}`})
-  .done(data => 
-  {
-    console.log(data);
-    result.html("O CEP indicado foi encontrado");
-    result.removeClass("r");
-    
-    $("#rua").html(`<span class="p">${data.address_type} </span> ${data.address_name}`);
-    $("#bairro").html(`<span class="p">Bairro</span> ${data.district}`);
-    $("#cidade").html(`<span class="p">Cidade</span> ${data.city}`);
-    $("#ddd").html(`<span class="p">DDD</span> ${data.ddd}`);
-    $("#ibge").html(`<span class="p">IBGE</span> ${data.city_ibge}`);
-    $("#lat").html(`<span class="p">LAT</span> ${data.lat}`);
-    $("#long").html(`<span class="p">LONG</span> ${data.lng}`);
-   
-    const t0 = `${url}&q=${data.lat},${data.lng}+(CEP%20${data.cep})&output=embed`;
-    map.attr('src',t0); ///?api=1&zoom=${zoom}&maptype=${mtype}
-  }).fail(function (jqXHR, textStatus) {
-    result.addClass("r");
-    result.html("O CEP indicado não foi encontrado!")
-    ClearFields ();
-  });
+  .done(GetCEPData)
+  .fail(GetCEPError);
 }
 
 //$("#CEP").on("input", CEPChange);
